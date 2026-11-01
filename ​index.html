@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensitivity King - Free Fire India</title>
+    
+    <!-- Firebase SDK Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #0b0e14;
+            --card-bg: #151a23;
+            --accent-gold: #ffb703;
+            --accent-red: #ff0055;
+            --neon-blue: #00f0ff;
+            --text-color: #ffffff;
+            --text-sub: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-bottom: 40px;
+        }
+
+        /* Header / Banner */
+        header {
+            text-align: center;
+            padding: 20px 15px;
+            background: linear-gradient(180deg, rgba(255, 0, 85, 0.2) 0%, rgba(11, 14, 20, 1) 100%);
+            border-bottom: 2px solid var(--accent-red);
+        }
+
+        .header-box {
+            background: #151a23;
+            border: 1px solid #2a3241;
+            border-radius: 15px;
+            padding: 20px 15px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .brand-top-badge {
+            display: inline-block;
+            background: rgba(255, 183, 3, 0.1);
+            color: var(--accent-gold);
+            border: 1px solid var(--accent-gold);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .header-box h1 {
+            font-size: 1.5rem;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .header-box p {
+            color: var(--text-sub);
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        /* Container */
+        .container {
+            padding: 20px 15px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .section-title-wrap {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title-wrap span {
+            font-size: 1.2rem;
+            margin-right: 8px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .section-subtitle {
+            color: var(--text-sub);
+            font-size: 0.8rem;
+            margin-top: 2px;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid #2a3241;
+            border-radius: 16px;
+            padding: 20px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card:hover, .card:active {
+            border-color: var(--accent-gold);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 183, 3, 0.15);
+        }
+
+        .brand-img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            background: #0b0e14;
+            padding: 5px;
+            border: 1px solid #2a3241;
+        }
+
+        .card h3 {
+            font-size: 1rem;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+
+        .card p {
+            color: var(--text-sub);
+            font-size: 0.75rem;
+            margin-bottom: 15px;
+        }
+
+        .select-btn {
+            background: #0b0e14;
+            color: var(--accent-gold);
+            border: 1px solid #2a3241;
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            border-radius: 8px;
+            width: 100%;
+            text-transform: uppercase;
+            transition: 0.2s;
+        }
+
+        .card:hover .select-btn {
+            background: var(--accent-gold);
+            color: #000;
+            border-color: var(--accent-gold);
+        }
+
+        /* Learn More Button & Loading Animation */
+        .btn-container {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .btn-learn-more {
+            background: linear-gradient(45deg, var(--accent-red), #ff5500);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 0, 85, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Back Button */
+        .btn-back {
+            background: #151a23;
+            color: white;
+            border: 1px solid #2a3241;
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        /* Sensitivity Details View */
+        .sensi-box {
+            background: var(--card-bg);
+            border: 1px solid var(--accent-gold);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(255, 183, 3, 0.1);
+        }
+
+        .sensi-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #2a3241;
+        }
+
+        .sensi-item:last-child {
+            border-bottom: none;
+        }
+
+        .sensi-name {
+            color: var(--text-sub);
+            font-size: 0.9rem;
+        }
+
+        .sensi-val {
+            color: var(--accent-gold);
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .image-preview-card {
+            background: var(--card-bg);
+            border: 1px dashed var(--neon-blue);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .image-preview-card p {
+            color: var(--text-sub);
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+
+        .image-preview-card img {
+            max-width: 100%;
+            border-radius: 10px;
+            border: 1px solid #2a3241;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 25px 15px;
+            color: var(--text-sub);
+            font-size: 0.75rem;
+            border-top: 1px solid #151a23;
+            margin-top: 40px;
+            background: #0b0e14;
+        }
+
+        footer h4 {
+            color: var(--text-color);
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="header-box">
+            <div class="brand-top-badge">👑 Sensitivity King</div>
+            <h1>Free Fire India Hub</h1>
+            <p>Select your mobile brand & model to get exact Auto Headshot settings & Fire Button size!</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- BRANDS PAGE -->
+        <div id="brands-page">
+            <div class="section-title-wrap">
+                <span>📱</span>
+                <div>
+                    <div class="section-title">Select Mobile Brand</div>
+                    <div class="section-subtitle">Choose your phone brand below</div>
+                </div>
+            </div>
+
+            <div class="grid" id="brands-grid">
+                <!-- Initial 6 Brands -->
+                <div class="card" onclick="openBrand('Redmi')">
+                    <div>
+                        <img src="https://via.placeholder.com/60/151a23/ff3366?text=Redmi" class="brand-img" alt="Redmi">
+                        <h3>REDMI</h3>
+                        <p>Xiaomi & Redmi Series</p>
+                    </div>
+                    <button class="select-btn">Select Brand ></button>
+                </div>
+
+                <div class="card" onclick="openBrand('Realme')">
+                    <div>
+                        <img src="https://via.placeholder.com/60/151a23/ff7700?text=Realme" class="brand-img" alt="Realme">
+                        <h3>REALME</h3>
+                        <p>Realme & Narzo Series</p>
+                    </div>
+                    <button class="select-btn">Select Brand ></button>
+                </div>
+
+                <div class="card" onclick="openBrand('Poco')">
+                    <div>
+                        <img src="https://via.placeholder.com/60/151a23/ffb703?text=Poco" class="brand-img" alt="Poco">
+                        <h3>POCO</h3>
+                        <p>POCO X & M Series</p>
+                    </div>
+                    <button class="select-btn">Select Brand ></button>
+                </div>
+
+                <div class="card" onclick="openBrand('Samsung')">
+                    <div>
+                        <img src="https://via.placeholder.com/60/151a23/00f0ff?text=Samsung" class="brand-img" alt="Samsung">
+                        <h3>SAMSUNG</h3>
+                        <p>Galaxy M, A & S Series</p>
+                    </div>
+                    <button class="select-btn">Select Brand ></button>
+                </div>
+
+                <div class="card" onclick="openBrand('Vivo')">
+                    <div>
+                        <img src="https://via.placeholder.com/60/151a23/0051ff?text=Vivo" class="brand-img" alt="Vivo">
+                        <h3>VIVO</h3>
+                        <p>Vivo Y, T & V Series</p>
+                    </div>
+                    <button class="select-btn">Select Brand ></button>
+                </div>
+
+                <div class="card" onclick="openBrand('OnePlus')">
+                    <div>
+                        <img src="https://via.placeholder.com/60/151a23/ff0000?text=OnePlus" class="brand-img" alt="OnePlus">
+                        <h3>ONEPLUS</h3>
+                        <p>Nord & Flagship Series</p>
+                    </div>
+                    <button class="select-btn">Select Brand ></button>
+                </div>
+
+                <!-- Extra Brands (Hidden initially) -->
+                <div class="card extra-brand hidden" onclick="openBrand('iQOO')">
+                    <div>
+                        <img src="https://via.placeholder.com/60/151a23/ffaa00?text=iQOO" class="brand-img" alt="iQOO">
+                        <h3>iQOO</h3>
+                        <p>Gaming Phone Series</p>
+                    </div>
+                    <button class="select-btn">Select Brand ></button>
+                </div>
+
+                <div class="card extra-brand hidden" onclick="openBrand('OPPO')">
+                    <div>
+                        <img src="https://via.placeholder.com/60/151a23/00ff66?text=OPPO" class="brand-img" alt="OPPO">
+                        <h3>OPPO</h3>
+                        <p>Oppo Reno & A Series</p>
+                    </div>
+                    <button class="select-btn">Select Brand ></button>
+                </div>
+
+                <div class="card extra-brand hidden" onclick="openBrand('Infinix')">
+                    <div>
+                        <img src="https://via.placeholder.com/60/151a23/aa00ff?text=Infinix" class="brand-img" alt="Infinix">
+                        <h3>INFINIX</h3>
+                        <p>Hot & GT Series</p>
+                    </div>
+                    <button class="select-btn">Select Brand ></button>
+                </div>
+            </div>
+
+            <div class="btn-container" id="learn-more-container">
+                <button class="btn-learn-more" id="learn-more-btn" onclick="loadMoreBrands()">
+                    <span id="btn-text">Learn More Brands ∨</span>
+                    <div id="btn-spinner" class="spinner hidden"></div>
+                </button>
+            </div>
+        </div>
+
+        <!-- MODELS PAGE -->
+        <div id="models-page" class="hidden">
+            <button class="btn-back" onclick="goBackToBrands()">← Back to Brands</button>
+            <div class="section-title-wrap">
+                <span>📱</span>
+                <div>
+                    <div class="section-title" id="selected-brand-title">Models</div>
+                    <div class="section-subtitle">Choose your exact phone model</div>
+                </div>
+            </div>
+            <div class="grid" id="models-grid"></div>
+        </div>
+
+        <!-- SENSITIVITY DETAILS PAGE -->
+        <div id="details-page" class="hidden">
+            <button class="btn-back" onclick="goBackToModels()">← Back to Models</button>
+            <div class="section-title-wrap">
+                <span>🎯</span>
+                <div>
+                    <div class="section-title" id="selected-model-title">Sensitivity Details</div>
+                    <div class="section-subtitle">Fetched live from Firebase Database</div>
+                </div>
+            </div>
+
+            <!-- Firebase Dynamic Sensi Values -->
+            <div class="sensi-box">
+                <div class="sensi-item"><span class="sensi-name">General Sensi</span><span class="sensi-val" id="db-general">Loading...</span></div>
+                <div class="sensi-item"><span class="sensi-name">Red Dot Sensi</span><span class="sensi-val" id="db-reddot">Loading...</span></div>
+                <div class="sensi-item"><span class="sensi-name">2x Scope</span><span class="sensi-val" id="db-scope2">Loading...</span></div>
+                <div class="sensi-item"><span class="sensi-name">4x Scope</span><span class="sensi-val" id="db-scope4">Loading...</span></div>
+                <div class="sensi-item"><span class="sensi-name">Sniper Scope</span><span class="sensi-val" id="db-sniper">Loading...</span></div>
+                <div class="sensi-item"><span class="sensi-name">Free Look</span><span class="sensi-val" id="db-freelook">Loading...</span></div>
+            </div>
+
+            <!-- Sensitivity Image -->
+            <div class="image-preview-card">
+                <h3 style="color: var(--neon-blue); margin-bottom: 5px;">Sensitivity Setup Image</h3>
+                <img id="db-sensi-img" src="https://via.placeholder.com/400x200/151a23/00f0ff?text=Loading..." alt="Sensitivity Image">
+                <p>Official Sensitivity Screenshot</p>
+            </div>
+
+            <!-- Fire Button Size & Image -->
+            <div class="image-preview-card">
+                <h3 style="color: var(--accent-gold); margin-bottom: 5px;">Best Fire Button Size</h3>
+                <h2 style="color: var(--accent-red); font-size: 2rem; margin: 10px 0;" id="db-fire-size">--%</h2>
+                <img id="db-fire-img" src="https://via.placeholder.com/400x150/151a23/ff0055?text=Loading..." alt="Fire Button Image">
+                <p>Fire Button Position & Size</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <h4>SENSITIVITY KING - FREE FIRE INDIA</h4>
+        <p>© 2026 Sensitivity King. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // 1. FIREBASE CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Phone Models Data
+        const phoneData = {
+            'Redmi': [
+                { name: 'Redmi 12 5G', id: 'redmi_12_5g' },
+                { name: 'Redmi Note 12 Pro', id: 'redmi_note_12_pro' },
+                { name: 'Redmi Note 13 5G', id: 'redmi_note_13_5g' }
+            ],
+            'Realme': [
+                { name: 'Realme 11 Pro', id: 'realme_11_pro' },
+                { name: 'Realme Narzo 60', id: 'realme_narzo_60' }
+            ],
+            'Poco': [
+                { name: 'POCO X5 Pro', id: 'poco_x5_pro' },
+                { name: 'POCO M6 Pro', id: 'poco_m6_pro' }
+            ],
+            'Samsung': [
+                { name: 'Galaxy A14 5G', id: 'samsung_a14' },
+                { name: 'Galaxy M34', id: 'samsung_m34' }
+            ],
+            'Vivo': [
+                { name: 'Vivo T2x 5G', id: 'vivo_t2x' },
+                { name: 'Vivo V27', id: 'vivo_v27' }
+            ],
+            'OnePlus': [
+                { name: 'Nord CE 3 Lite', id: 'oneplus_ce3_lite' },
+                { name: 'Nord 3 5G', id: 'oneplus_nord3' }
+            ],
+            'iQOO': [
+                { name: 'iQOO Z7 Pro', id: 'iqoo_z7_pro' }
+            ],
+            'OPPO': [
+                { name: 'OPPO Reno 10', id: 'oppo_reno_10' }
+            ],
+            'Infinix': [
+                { name: 'GT 10 Pro', id: 'infinix_gt_10_pro' }
+            ]
+        };
+
+        let currentBrand = '';
+
+        // Learn More with Loading Delay Functionality
+        function loadMoreBrands() {
+            const btnText = document.getElementById('btn-text');
+            const btnSpinner = document.getElementById('btn-spinner');
+            const btn = document.getElementById('learn-more-btn');
+
+            // Show Loading State
+            btnText.innerText = "Loading Brands...";
+            btnSpinner.classList.remove('hidden');
+            btn.disabled = true;
+
+            // Wait 1.2 Seconds for a smooth loading effect
+            setTimeout(() => {
+                document.querySelectorAll('.extra-brand').forEach(card => card.classList.remove('hidden'));
+                document.getElementById('learn-more-container').style.display = 'none';
+            }, 1200);
+        }
+
+        function openBrand(brandName) {
+            currentBrand = brandName;
+            history.pushState({page: 'models', brand: brandName}, "", "#models");
+            
+            document.getElementById('brands-page').classList.add('hidden');
+            document.getElementById('models-page').classList.remove('hidden');
+            document.getElementById('selected-brand-title').innerText = brandName + " Models";
+
+            const modelsGrid = document.getElementById('models-grid');
+            modelsGrid.innerHTML = '';
+
+            const models = phoneData[brandName] || [];
+            models.forEach(model => {
+                const modelCard = document.createElement('div');
+                modelCard.className = 'card';
+                modelCard.onclick = () => openModelDetails(model.name, model.id);
+                modelCard.innerHTML = `
+                    <div>
+                        <img src="https://via.placeholder.com/50/151a23/00f0ff?text=Phone" class="brand-img" alt="${model.name}">
+                        <h3>${model.name}</h3>
+                        <p>Click for Sensi</p>
+                    </div>
+                    <button class="select-btn">Get Sensi ></button>
+                `;
+                modelsGrid.appendChild(modelCard);
+            });
+        }
+
+        function openModelDetails(modelName, modelId) {
+            history.pushState({page: 'details', model: modelName}, "", "#details");
+
+            document.getElementById('models-page').classList.add('hidden');
+            document.getElementById('details-page').classList.remove('hidden');
+            document.getElementById('selected-model-title').innerText = modelName + " Sensitivity";
+
+            // Set loading state
+            document.getElementById('db-general').innerText = "Loading...";
+            document.getElementById('db-reddot').innerText = "Loading...";
+            document.getElementById('db-scope2').innerText = "Loading...";
+            document.getElementById('db-scope4').innerText = "Loading...";
+            document.getElementById('db-sniper').innerText = "Loading...";
+            document.getElementById('db-freelook').innerText = "Loading...";
+            document.getElementById('db-fire-size').innerText = "--%";
+
+            // Reference to Firebase path: /sensi_data/{modelId}
+            db.ref('sensi_data/' + modelId).once('value').then((snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    document.getElementById('db-general').innerText = data.general || '98';
+                    document.getElementById('db-reddot').innerText = data.reddot || '95';
+                    document.getElementById('db-scope2').innerText = data.scope2 || '90';
+                    document.getElementById('db-scope4').innerText = data.scope4 || '88';
+                    document.getElementById('db-sniper').innerText = data.sniper || '60';
+                    document.getElementById('db-freelook').innerText = data.freelook || '70';
+                    document.getElementById('db-fire-size').innerText = (data.firesize || '48') + '%';
+                    
+                    if(data.sensiImage) document.getElementById('db-sensi-img').src = data.sensiImage;
+                    if(data.fireImage) document.getElementById('db-fire-img').src = data.fireImage;
+                } else {
+                    document.getElementById('db-general').innerText = '98';
+                    document.getElementById('db-reddot').innerText = '95';
+                    document.getElementById('db-scope2').innerText = '90';
+                    document.getElementById('db-scope4').innerText = '88';
+                    document.getElementById('db-sniper').innerText = '60';
+                    document.getElementById('db-freelook').innerText = '70';
+                    document.getElementById('db-fire-size').innerText = '48%';
+                }
+            }).catch((error) => {
+                console.error("Firebase Error: ", error);
+            });
+        }
+
+        // Mobile Back Button Handling
+        window.onpopstate = function(event) {
+            if (event.state && event.state.page === 'models') {
+                document.getElementById('details-page').classList.add('hidden');
+                document.getElementById('brands-page').classList.add('hidden');
+                document.getElementById('models-page').classList.remove('hidden');
+            } else {
+                document.getElementById('models-page').classList.add('hidden');
+                document.getElementById('details-page').classList.add('hidden');
+                document.getElementById('brands-page').classList.remove('hidden');
+            }
+        };
+
+        function goBackToBrands() {
+            history.back();
+        }
+
+        function goBackToModels() {
+            history.back();
+        }
+    </script>
+</body>
+</html>
